@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TV Wall Lab — Gerador de Painéis de TV Modernos 2026</title>
+<style>
+:root{
+  --gold:#C9A84C; --gold-light:#E8C97A; --gold-glow:rgba(201,168,76,.3);
+  --s1:#0C0C12; --s2:#13131E; --s3:#1A1A28; --s4:#222232; --s5:#2C2C40;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;}
+body{background:var(--s1);color:#E0E0F0;font-family:-apple-system,'Segoe UI',Inter,sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--s2);}
+::-webkit-scrollbar-thumb{background:var(--s5);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+/* HEADER */
+.header{background:linear-gradient(180deg,#0A0A10,var(--s2));border-bottom:1px solid rgba(201,168,76,.18);position:sticky;top:0;z-index:50;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.logo-wrap{display:flex;align-items:center;gap:10px;}
+.logo-icon{background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:10px;padding:8px 11px;font-size:18px;line-height:1;}
+.logo-title{font-size:19px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.28);letter-spacing:1.5px;text-transform:uppercase;margin-top:-1px;}
+.header-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+@media (max-width: 600px){
+  .logo-sub{display:none;}
+  .logo-title{font-size:17px;}
+  .header{padding:10px 12px;}
+}
+
+/* BUTTONS */
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1a1008;font-weight:700;border-radius:8px;padding:8px 14px;cursor:pointer;border:none;font-size:12px;transition:all .2s;}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.35);}
+.btn-dark{background:var(--s4);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.65);border-radius:8px;padding:7px 12px;cursor:pointer;font-size:12px;transition:all .2s;}
+.btn-dark:hover{border-color:var(--gold);color:var(--gold);}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px;}
+
+/* LAYOUT */
+.main-grid{display:grid;grid-template-columns:280px 1fr 300px;gap:10px;padding:10px;min-height:calc(100vh - 64px);max-width:1620px;margin:0 auto;}
+
+/* MOBILE NAV TABS */
+.mobile-nav{display:none;position:sticky;top:60px;background:var(--s2);z-index:40;padding:8px;gap:6px;border-bottom:1px solid rgba(255,255,255,.06);}
+.mobile-nav button{flex:1;padding:8px;background:var(--s3);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.55);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;}
+.mobile-nav button.active{background:var(--gold);color:#1a1008;border-color:var(--gold);}
+
+@media (max-width: 1200px){
+  .main-grid{grid-template-columns:260px 1fr;}
+  .right-panel{grid-column:1 / -1;flex-direction:row !important;flex-wrap:wrap;}
+  .right-panel > *{flex:1 1 280px;}
+}
+@media (max-width: 900px){
+  .mobile-nav{display:flex;}
+  .main-grid{grid-template-columns:1fr;gap:8px;padding:8px;}
+  .sidebar,.right-panel{max-height:none !important;overflow:visible !important;}
+  .pane-hidden{display:none;}
+  .right-panel{flex-direction:column !important;}
+}
+
+/* SIDEBAR */
+.sidebar{overflow-y:auto;max-height:calc(100vh - 80px);padding-right:4px;padding-bottom:16px;}
+.section-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.8px;color:var(--gold);margin-bottom:8px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.section-label:first-child{margin-top:0;}
+.section-label .chev{font-size:10px;opacity:.6;transition:transform .2s;}
+.section-label.collapsed .chev{transform:rotate(-90deg);}
+.section-body{transition:max-height .25s,opacity .2s;overflow:hidden;}
+.section-body.collapsed{max-height:0 !important;opacity:0;}
+
+/* CATEGORY */
+.cat-scroll{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.cat-btn{padding:4px 9px;border-radius:20px;font-size:10px;cursor:pointer;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);transition:all .2s;background:none;}
+.cat-btn.active,.cat-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.08);}
+
+/* MODEL GRID */
+#modelGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+@media (max-width: 900px){#modelGrid{grid-template-columns:repeat(4,1fr);}}
+@media (max-width: 500px){#modelGrid{grid-template-columns:repeat(3,1fr);}}
+.model-card{background:var(--s4);border:1.5px solid rgba(255,255,255,.06);border-radius:8px;padding:6px 4px;cursor:pointer;transition:all .18s;text-align:center;}
+.model-card:hover{border-color:rgba(201,168,76,.5);transform:translateY(-1px);}
+.model-card.active{border-color:var(--gold);background:rgba(201,168,76,.1);box-shadow:0 0 0 1px var(--gold);}
+.model-thumb{width:100%;height:42px;border-radius:5px;margin-bottom:4px;overflow:hidden;position:relative;}
+.model-name{font-size:8.5px;font-weight:600;color:rgba(255,255,255,.6);line-height:1.2;}
+
+/* CONTROLS */
+.ctrl-block{margin-bottom:11px;}
+.ctrl-label{font-size:10.5px;color:rgba(255,255,255,.5);margin-bottom:5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+.ctrl-val{color:var(--gold);font-weight:700;font-size:11px;}
+.toggle-group{display:flex;background:var(--s3);border-radius:7px;padding:3px;gap:2px;flex-wrap:wrap;}
+.toggle-opt{flex:1;padding:5px 3px;border-radius:5px;text-align:center;font-size:9.5px;cursor:pointer;transition:all .18s;color:rgba(255,255,255,.4);min-width:34px;}
+.toggle-opt.active{background:var(--gold);color:#1a1008;font-weight:700;}
+.color-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.color-dot{width:25px;height:25px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .18s;flex-shrink:0;}
+.color-dot.active{border-color:var(--gold);transform:scale(1.15);}
+.color-dot:hover{transform:scale(1.1);}
+.decor-row{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;padding:3px 0;color:rgba(255,255,255,.6);}
+.decor-row input{accent-color:var(--gold);width:13px;height:13px;cursor:pointer;}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--s5);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:15px;height:15px;background:var(--gold);border-radius:50%;cursor:pointer;box-shadow:0 2px 6px rgba(201,168,76,.4);}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;background:var(--gold);border-radius:50%;cursor:pointer;border:0;}
+input[type=color]{width:100%;height:30px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:transparent;cursor:pointer;padding:2px;}
+
+/* DIMENSIONS TOGGLE */
+.dim-toggle{display:flex;align-items:center;gap:8px;background:var(--s3);padding:8px 10px;border-radius:8px;margin-top:6px;cursor:pointer;border:1px solid rgba(255,255,255,.06);}
+.dim-toggle input{accent-color:var(--gold);width:14px;height:14px;}
+.dim-toggle span{font-size:11px;color:rgba(255,255,255,.7);font-weight:600;}
+
+/* PREVIEW */
+.preview-area{display:flex;flex-direction:column;gap:8px;}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+#previewTitle{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);}
+@media (max-width: 600px){#previewTitle{font-size:11px;}}
+
+#preview-container{position:relative;width:100%;height:660px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:#1a1a1a;}
+@media (max-width: 1200px){#preview-container{height:580px;}}
+@media (max-width: 900px){#preview-container{height:480px;}}
+@media (max-width: 500px){#preview-container{height:380px;}}
+
+.layer{position:absolute;inset:0;transition:opacity .3s,background .4s;}
+#l-marble,#l-slats,#l-finish,#l-shelves,#l-decor,#l-dims{pointer-events:none;}
+#l-shelves{z-index:10;}
+#l-decor{z-index:18;}
+#l-dims{z-index:30;}
+#led-strip{position:absolute;left:0;right:0;height:3px;border-radius:2px;pointer-events:none;transition:all .4s;z-index:14;}
+#l-ceil{position:absolute;top:0;left:0;right:0;height:200px;pointer-events:none;transition:all .4s;z-index:2;}
+#tv-el{position:absolute;border-radius:5px;overflow:hidden;z-index:20;transition:all .4s ease;}
+#l-console{position:absolute;z-index:15;transition:all .4s;}
+#panel-frame{position:absolute;border:2px solid rgba(255,255,255,.04);pointer-events:none;z-index:11;transition:all .4s;border-radius:3px;}
+.preview-badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);padding:5px 12px;border-radius:20px;font-size:10px;font-weight:600;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.1);z-index:40;pointer-events:none;max-width:calc(100% - 24px);}
+.floor-shadow{position:absolute;bottom:0;left:0;right:0;height:55px;background:linear-gradient(0deg,rgba(0,0,0,.5),transparent);pointer-events:none;z-index:5;}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+@media (max-width: 500px){.stats-bar{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--s3);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:9px 8px;text-align:center;}
+.stat-lbl{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;}
+.stat-val{font-size:15px;font-weight:800;color:var(--gold);margin-top:1px;}
+
+/* RIGHT PANEL */
+.right-panel{overflow-y:auto;max-height:calc(100vh - 80px);display:flex;flex-direction:column;gap:9px;padding-bottom:16px;padding-right:4px;}
+.panel-box{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;}
+
+#prompt-output{background:var(--s3);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#B8C8DC;font-size:11px;line-height:1.6;padding:11px;width:100%;resize:vertical;font-family:'Courier New',monospace;min-height:200px;outline:none;}
+#prompt-output:focus{border-color:var(--gold);}
+
+.fav-item{background:var(--s4);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 10px;font-size:10.5px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:all .15s;}
+.fav-item:hover{border-color:var(--gold);}
+.fav-rm{color:rgba(255,80,80,.6);font-size:14px;line-height:1;cursor:pointer;padding:0 4px;}
+
+#toast{position:fixed;bottom:24px;right:24px;background:var(--gold);color:#1a1008;padding:10px 18px;border-radius:8px;font-weight:700;font-size:12px;transform:translateY(80px);opacity:0;transition:all .3s;z-index:999;pointer-events:none;}
+#toast.show{transform:translateY(0);opacity:1;}
+
+/* 3D Modal */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);z-index:200;align-items:center;justify-content:center;padding:20px;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:var(--s2);border:1px solid rgba(201,168,76,.2);border-radius:16px;padding:22px;width:600px;max-width:100%;}
+#wall-3d-scene{width:100%;height:320px;perspective:1000px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:10px;background:var(--s1);}
+@media (max-width: 500px){#wall-3d-scene{height:240px;}}
+#wall-3d{width:340px;height:210px;position:relative;transform-style:preserve-3d;animation:rotate3d 9s ease-in-out infinite;}
+@keyframes rotate3d{0%{transform:rotateY(-22deg) rotateX(8deg);}50%{transform:rotateY(22deg) rotateX(-4deg);}100%{transform:rotateY(-22deg) rotateX(8deg);}}
+
+/* LED ANIMS */
+@keyframes ledPulse{0%,100%{opacity:.82;}50%{opacity:1;}}
+@keyframes ledRgb{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+@keyframes flicker{0%,100%{opacity:.9;transform:translateX(-50%) scaleY(1);}50%{opacity:1;transform:translateX(-50%) scaleY(1.1);}}
+.led-warm,.led-cool{animation:ledPulse 3s ease-in-out infinite;}
+.led-rgb{animation:ledRgb 5s linear infinite;}
+
+.tip-box{background:linear-gradient(135deg,rgba(201,168,76,.07),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.14);border-radius:12px;padding:13px;}
+
+/* ACCESS GATE */
+body.access-locked{overflow:hidden;}
+body.access-locked > :not(#access-gate){display:none !important;}
+#access-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 18% 8%,rgba(201,168,76,.22),transparent 34%),radial-gradient(circle at 82% 92%,rgba(232,201,122,.13),transparent 32%),linear-gradient(145deg,#08080d,#151522 58%,#0c0c12);}
+#access-gate.hidden{display:none;}
+.access-card{width:min(430px,100%);border:1px solid rgba(201,168,76,.22);border-radius:14px;background:rgba(19,19,30,.96);box-shadow:0 30px 90px rgba(0,0,0,.58);padding:34px 28px;text-align:center;}
+.access-brand{display:inline-flex;align-items:center;justify-content:center;margin-bottom:18px;padding:9px 15px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1a1008;font-size:12px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;}
+.access-card h1{font-size:24px;line-height:1.15;margin-bottom:8px;color:#fff;}
+.access-card p{font-size:13px;line-height:1.45;color:rgba(255,255,255,.58);margin-bottom:22px;}
+.access-card input{width:100%;height:50px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:#0c0c12;color:#fff;font-size:20px;font-weight:800;letter-spacing:.2em;text-align:center;outline:none;margin-bottom:12px;}
+.access-card input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.13);}
+.access-card button{width:100%;height:48px;border:0;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1a1008;font-weight:900;cursor:pointer;}
+.access-card button:hover{filter:brightness(1.04);}
+.access-error{min-height:18px;margin-top:12px;color:#ff8f8f;font-size:12px;font-weight:800;}
+</style>
+</head>
+<body class="access-locked">
+
+<div id="access-gate">
+  <div class="access-card">
+    <div class="access-brand">@projetoecustos</div>
+    <h1>TV Wall Lab</h1>
+    <p>Digite sua senha de acesso para abrir o gerador de paineis de TV modernos.</p>
+    <input type="password" id="access-password" inputmode="numeric" autocomplete="off" placeholder="........" maxlength="20" onkeydown="if(event.key==='Enter') unlockAccess()">
+    <button type="button" onclick="unlockAccess()">Entrar</button>
+    <div class="access-error" id="access-error"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var ACCESS_PASSWORD = '15307481';
+  var ACCESS_KEY = 'tv_wall_lab_access_ok';
+
+  function showApp(){
+    document.body.classList.remove('access-locked');
+    var gate = document.getElementById('access-gate');
+    if(gate) gate.classList.add('hidden');
+  }
+
+  window.unlockAccess = function(){
+    var input = document.getElementById('access-password');
+    var error = document.getElementById('access-error');
+    if(input && input.value === ACCESS_PASSWORD){
+      sessionStorage.setItem(ACCESS_KEY, '1');
+      showApp();
+      return;
+    }
+    if(error) error.textContent = 'Senha incorreta. Tente novamente.';
+    if(input){
+      input.value = '';
+      input.focus();
+    }
+    setTimeout(function(){ if(error) error.textContent = ''; }, 3000);
+  };
+
+  if(sessionStorage.getItem(ACCESS_KEY) === '1'){
+    showApp();
+  }
+})();
+</script>
+
+<header class="header">
+  <div class="logo-wrap">
+    <div class="logo-icon">📺</div>
+    <div>
+      <div class="logo-title">TV Wall Lab</div>
+      <div class="logo-sub">Gerador de Painéis de TV Modernos • 2026</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span id="fav-counter" style="font-size:11px;color:rgba(255,255,255,.35);">❤️ 0</span>
+    <button class="btn-dark btn-sm" id="btn-inspire">✨ Inspirar</button>
+    <button class="btn-dark btn-sm" id="btn-rand-top">🎲 Random</button>
+    <button class="btn-gold btn-sm" id="btn-3d-top">🌐 3D</button>
+  </div>
+</header>
+
+<!-- MOBILE NAV TABS -->
+<nav class="mobile-nav" id="mobileNav">
+  <button data-pane="preview" class="active">👁️ Preview</button>
+  <button data-pane="controls">⚙️ Ajustes</button>
+  <button data-pane="prompt">✍️ Prompt</button>
+</nav>
+
+<div class="main-grid">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" data-pane="controls">
+
+    <div class="section-label" data-section="models">🎨 Modelos (30) <span class="chev">▼</span></div>
+    <div class="section-body" data-section-body="models">
+      <div class="cat-scroll" id="catFilter">
+        <button class="cat-btn active" data-cat="all">Todos</button>
+        <button class="cat-btn" data-cat="minimal">Minimal</button>
+        <button class="cat-btn" data-cat="wood">Wood</button>
+        <button class="cat-btn" data-cat="marble">Marble</button>
+        <button class="cat-btn" data-cat="bold">Bold</button>
+        <button class="cat-btn" data-cat="organic">Organic</button>
+      </div>
+      <div id="modelGrid"></div>
+    </div>
+
+    <div class="section-label" data-section="dims">📐 Medidas (cm) <span class="chev">▼</span></div>
+    <div class="section-body" data-section-body="dims">
+      <div class="ctrl-block">
+        <div class="ctrl-label">Largura do painel <span class="ctrl-val"><span id="pwVal">220</span> cm</span></div>
+        <input type="range" id="pwRange" min="140" max="400" step="5" value="220">
+      </div>
+      <div class="ctrl-block">
+        <div class="ctrl-label">Altura do painel <span class="ctrl-val"><span id="phVal">240</span> cm</span></div>
+        <input type="range" id="phRange" min="180" max="320" step="5" value="240">
+      </div>
+      <div class="ctrl-block">
+        <div class="ctrl-label">Distância do piso <span class="ctrl-val"><span id="fdVal">30</span> cm</span></div>
+        <input type="range" id="fdRange" min="0" max="100" step="5" value="30">
+      </div>
+      <div class="ctrl-block">
+        <div class="ctrl-label">Altura TV a partir do piso <span class="ctrl-val"><span id="thVal">110</span> cm</span></div>
+        <input type="range" id="thRange" min="60" max="200" step="5" value="110">
+      </div>
+      <div class="ctrl-block">
+        <div class="ctrl-label">Espessura do painel <span class="ctrl-val"><span id="ptVal">8</span> cm</span></div>
+        <input type="range" id="ptRange" min="3" max="20" step="1" value="8">
+      </div>
+      <label class="dim-toggle">
+        <input type="checkbox" id="showDims" checked>
+        <span>📏 Mostrar cotas no preview</span>
+      </label>
+    </div>
+
+    <div class="section-label" data-section="custom">⚙️ Personalização <span class="chev">▼</span></div>
+    <div class="section-body" data-section-body="custom">
+      <div class="ctrl-block">
+        <div class="ctrl-label">Cor da Parede</div>
+        <div class="color-row" id="wallPresets"></div>
+        <input type="color" id="wallPicker" value="#2A2018">
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Cor da Madeira</div>
+        <div class="color-row" id="woodPresets"></div>
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Padrão de Ripas</div>
+        <div class="toggle-group" data-group="slat">
+          <div class="toggle-opt active" data-v="vertical">Vert.</div>
+          <div class="toggle-opt" data-v="horizontal">Horiz.</div>
+          <div class="toggle-opt" data-v="geometric">Geom.</div>
+          <div class="toggle-opt" data-v="none">Nenhum</div>
+        </div>
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Iluminação LED</div>
+        <div class="toggle-group" data-group="light">
+          <div class="toggle-opt active" data-v="warm">Warm</div>
+          <div class="toggle-opt" data-v="cool">Cool</div>
+          <div class="toggle-opt" data-v="rgb">RGB</div>
+          <div class="toggle-opt" data-v="hidden">Oculta</div>
+          <div class="toggle-opt" data-v="none">Sem</div>
+        </div>
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Console / Rack</div>
+        <div class="toggle-group" data-group="console">
+          <div class="toggle-opt active" data-v="floating">Float</div>
+          <div class="toggle-opt" data-v="legs">Pés</div>
+          <div class="toggle-opt" data-v="fullwidth">Full</div>
+          <div class="toggle-opt" data-v="asym">Assim.</div>
+        </div>
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Tamanho da TV</div>
+        <div class="toggle-group" data-group="tv">
+          <div class="toggle-opt" data-v="55">55"</div>
+          <div class="toggle-opt active" data-v="65">65"</div>
+          <div class="toggle-opt" data-v="75">75"</div>
+          <div class="toggle-opt" data-v="85">85"</div>
+        </div>
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Prateleiras <span class="ctrl-val" id="shelfVal">2</span></div>
+        <input type="range" id="shelfRange" min="0" max="4" value="2">
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Acabamento</div>
+        <div class="toggle-group" data-group="finish">
+          <div class="toggle-opt active" data-v="matte">Matte</div>
+          <div class="toggle-opt" data-v="satin">Acet.</div>
+          <div class="toggle-opt" data-v="textured">Text.</div>
+        </div>
+      </div>
+
+      <div class="ctrl-block">
+        <div class="ctrl-label">Elementos Decorativos</div>
+        <div id="decorChecks"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ PREVIEW ============ -->
+  <main class="preview-area" data-pane="preview">
+    <div class="preview-toolbar">
+      <div id="previewTitle">Vertical Oak Slats • 65"</div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-dark btn-sm" id="btn-toggle-dims">📏 Cotas</button>
+        <button class="btn-dark btn-sm" id="btn-3d">🌐 3D</button>
+      </div>
+    </div>
+
+    <div id="preview-container">
+      <div id="l-wall"     class="layer"></div>
+      <div id="panel-frame"></div>
+      <div id="l-marble"   class="layer" style="opacity:0;"></div>
+      <div id="l-slats"    class="layer"></div>
+      <div id="l-finish"   class="layer" style="opacity:0;"></div>
+      <div id="l-ceil"></div>
+      <div id="l-shelves"  class="layer"></div>
+      <div id="led-strip"></div>
+      <div id="tv-el"></div>
+      <div id="l-console"></div>
+      <div id="l-decor"    class="layer"></div>
+      <div class="floor-shadow"></div>
+      <svg id="l-dims" class="layer" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="preview-badge" id="previewBadge">Model 9 — Vertical Oak Slats</div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-lbl">Painel</div><div class="stat-val" id="s-panel" style="font-size:12px;margin-top:4px;">220×240</div></div>
+      <div class="stat-card"><div class="stat-lbl">TV</div><div class="stat-val" id="s-tv">65"</div></div>
+      <div class="stat-card"><div class="stat-lbl">Altura TV</div><div class="stat-val" id="s-th" style="font-size:12px;margin-top:4px;">110 cm</div></div>
+      <div class="stat-card"><div class="stat-lbl">LED</div><div class="stat-val" id="s-led" style="font-size:12px;margin-top:4px;">Warm</div></div>
+    </div>
+  </main>
+
+  <!-- ============ RIGHT PANEL ============ -->
+  <div class="right-panel" data-pane="prompt">
+    <div class="panel-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+        <div class="section-label" style="margin:0;cursor:default;">✍️ Prompt IA</div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn-dark btn-sm" id="btn-mj">MJ</button>
+          <button class="btn-dark btn-sm" id="btn-flux">Flux</button>
+          <button class="btn-dark btn-sm" id="btn-leo">Leo</button>
+        </div>
+      </div>
+      <textarea id="prompt-output" rows="10"></textarea>
+      <button class="btn-gold" style="width:100%;margin-top:10px;" id="btn-copy">📋 Copiar Prompt</button>
+    </div>
+
+    <div class="panel-box">
+      <div class="section-label" style="margin-top:0;cursor:default;">🛠️ Ações</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+        <button class="btn-dark" id="btn-rand">🎲 Random</button>
+        <button class="btn-dark" id="btn-fav">❤️ Favorito</button>
+        <button class="btn-dark" id="btn-save">💾 Salvar</button>
+        <button class="btn-dark" id="btn-load">📂 Carregar</button>
+      </div>
+      <input type="file" id="fileIn" accept=".json" style="display:none;">
+    </div>
+
+    <div class="panel-box">
+      <div class="section-label" style="margin-top:0;cursor:default;">❤️ Favoritos</div>
+      <div id="favList" style="display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;">
+        <div style="font-size:10px;color:rgba(255,255,255,.22);text-align:center;padding:10px;">Nenhum favorito ainda</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div style="font-size:10.5px;font-weight:700;color:var(--gold);margin-bottom:7px;">💡 Dicas Pro</div>
+      <ul style="font-size:10px;color:rgba(255,255,255,.4);line-height:1.75;list-style:disc;padding-left:14px;">
+        <li>Midjourney: --v 6.1 --q 2 --s 750</li>
+        <li>Flux: adicione "cinematic lighting, 8k"</li>
+        <li>Leonardo: Kino XL + PhotoReal v2</li>
+        <li>Cotas mostram medidas reais em cm</li>
+        <li>Salve configs em JSON</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:17px;font-weight:800;color:var(--gold);">🌐 Preview 3D</h2>
+      <button id="btn-close-3d" style="color:rgba(255,255,255,.5);font-size:22px;background:none;border:none;cursor:pointer;">✕</button>
+    </div>
+    <div id="wall-3d-scene"><div id="wall-3d"></div></div>
+    <div style="margin-top:10px;text-align:center;font-size:10px;color:rgba(255,255,255,.25);">Rotação automática</div>
+  </div>
+</div>
+
+<div id="toast">✓</div>
+
+<script>
+'use strict';
+
+// ============================================================
+// 30 MODELS
+// ============================================================
+var MODELS = [
+  {id:1,name:'Minimal White Clean',cat:'minimal',wall:'#F2EDE6',wood:'#E8E2DA',slat:'none',light:'hidden',con:'floating',fin:'matte',marble:false,decor:['vaso'],desc:'parede branca impecável nicho embutido minimalista pureza absoluta'},
+  {id:2,name:'Soft Beige Japandi',cat:'minimal',wall:'#D4C5B0',wood:'#C8B89A',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['vaso','plantas'],desc:'paleta bege japonesa wabi-sabi ripas verticais madeira natural'},
+  {id:3,name:'Light Oak Floating',cat:'minimal',wall:'#E8E0D8',wood:'#C9A87C',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['vaso'],desc:'carvalho claro flutuante natural ripas verticais LED warm console suspenso'},
+  {id:4,name:'Pure White Marble',cat:'minimal',wall:'#F5F3EF',wood:'#D8D0C8',slat:'none',light:'cool',con:'fullwidth',fin:'satin',marble:true,mtype:'calacatta',decor:['vaso','esculturas'],desc:'Calacatta branco puríssimo veios dourados console full-width LED frio luxo'},
+  {id:5,name:'Scandinavian Light Wood',cat:'minimal',wall:'#EDE6DB',wood:'#D4B896',slat:'horizontal',light:'warm',con:'floating',fin:'matte',marble:false,decor:['plantas','livros'],desc:'madeira clara escandinava ripas horizontais bétula hygge nórdico'},
+  {id:6,name:'Cream & Brass',cat:'minimal',wall:'#EDE0C8',wood:'#C9A84C',slat:'none',light:'warm',con:'asym',fin:'satin',marble:false,decor:['vaso','esculturas'],desc:'creme sofisticado detalhes latão dourado console assimétrico brass elegância'},
+  {id:7,name:'Minimal Gray Linear',cat:'minimal',wall:'#C4C4C8',wood:'#9A9AA0',slat:'vertical',light:'cool',con:'floating',fin:'matte',marble:false,decor:['vaso'],desc:'cinza linear contemporâneo ripas grafite LED frio moderno arquitetônico'},
+  {id:8,name:'White Ribbed Panel',cat:'minimal',wall:'#F2EEE8',wood:'#E0DAD2',slat:'vertical',light:'hidden',con:'floating',fin:'textured',marble:false,decor:['vaso'],desc:'painel canalado branco texturizado relevo vertical iluminação oculta pureza'},
+  {id:9,name:'Vertical Oak Slats',cat:'wood',wall:'#2A2018',wood:'#C9A87C',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['vaso','plantas'],desc:'ripas verticais carvalho natural espaçamento preciso LED âmbar dramático'},
+  {id:10,name:'Dark Walnut Slats',cat:'wood',wall:'#1A1208',wood:'#5C3A1E',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['esculturas'],desc:'ripas verticais nogueira escura premium veios pronunciados LED âmbar luxo'},
+  {id:11,name:'Warm Teak Vertical',cat:'wood',wall:'#1E1508',wood:'#8B6340',slat:'vertical',light:'warm',con:'floating',fin:'satin',marble:false,decor:['vaso','plantas'],desc:'teca tropical ripas verticais acetinado óleo natural resort spa luxo'},
+  {id:12,name:'Black Oak Ribbed',cat:'wood',wall:'#0D0D0D',wood:'#1E1E1E',slat:'vertical',light:'rgb',con:'floating',fin:'matte',marble:false,decor:['vaso'],desc:'carvalho enegrecido ripas caneladas preto matte RGB máximo contraste dark'},
+  {id:13,name:'Horizontal Light Wood',cat:'wood',wall:'#D8CFC4',wood:'#C4A878',slat:'horizontal',light:'warm',con:'fullwidth',fin:'matte',marble:false,decor:['livros','plantas'],desc:'madeira clara ripas horizontais amplitude console full-width discreta'},
+  {id:14,name:'Mixed Wood Slats',cat:'wood',wall:'#1C1610',wood:'#8B5E3C',slat:'vertical',light:'warm',con:'asym',fin:'matte',marble:false,decor:['vaso','esculturas'],desc:'mistura madeiras carvalho nogueira ripas alternadas assimétrico'},
+  {id:15,name:'Fluted Oak with LED',cat:'wood',wall:'#1A1410',wood:'#B87D4B',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['vaso'],desc:'canelado carvalho LED embutido cada ripa luz sombra award-winning'},
+  {id:16,name:'Natural Pine Slats',cat:'wood',wall:'#E8DDD0',wood:'#DEB887',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['plantas','livros'],desc:'pinheiro natural ripas verticais nós visíveis rústica refinada'},
+  {id:17,name:'Calacatta Gold Marble',cat:'marble',wall:'#F5F0E8',wood:'#C9A84C',slat:'none',light:'warm',con:'floating',fin:'satin',marble:true,mtype:'calacatta',decor:['vaso','esculturas'],desc:'Calacatta Gold veios dourados console brass premium ultra luxo'},
+  {id:18,name:'Dark Emperador Marble',cat:'marble',wall:'#2C1A0E',wood:'#8B4513',slat:'none',light:'warm',con:'floating',fin:'satin',marble:true,mtype:'dark',decor:['esculturas'],desc:'Emperador escuro veios bronzeados console bronze escovado luxuoso'},
+  {id:19,name:'White Carrara + Wood',cat:'marble',wall:'#F0EDE8',wood:'#C9A87C',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:true,mtype:'carrara',decor:['vaso','plantas'],desc:'Carrara branco ripas verticais carvalho contraste elegante sofisticação'},
+  {id:20,name:'Geometric Marble Lines',cat:'marble',wall:'#ECEBE8',wood:'#D0C8C0',slat:'geometric',light:'cool',con:'floating',fin:'satin',marble:true,mtype:'white',decor:['vaso'],desc:'padrão geométrico mármore branco incrustações latão arquitetônico'},
+  {id:21,name:'Stone & Brass Accent',cat:'marble',wall:'#B8AFA5',wood:'#C9A84C',slat:'none',light:'warm',con:'asym',fin:'textured',marble:true,mtype:'stone',decor:['vaso','esculturas'],desc:'calcária texturizada acentos latão dourado console assimétrico natural'},
+  {id:22,name:'Backlit Marble Niche',cat:'marble',wall:'#2A2825',wood:'#C9A84C',slat:'none',light:'warm',con:'floating',fin:'satin',marble:true,mtype:'backlit',decor:['vaso'],desc:'nicho mármore retroiluminado LED espetacular translucidez joia arquitetura'},
+  {id:23,name:'Black Moody Concrete',cat:'bold',wall:'#1A1A1A',wood:'#2A2A2A',slat:'none',light:'warm',con:'floating',fin:'textured',marble:false,decor:['vaso','esculturas'],desc:'microcimento preto ultra dramático bruto LED âmbar industrial luxuoso'},
+  {id:24,name:'Dark Wood + Black',cat:'bold',wall:'#0A0A0A',wood:'#2C1A0E',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['esculturas'],desc:'fundo preto absoluto ripas madeira escura LED âmbar cinematográfico premium'},
+  {id:25,name:'Industrial Metal Accents',cat:'bold',wall:'#1C1C20',wood:'#4A4A4A',slat:'horizontal',light:'cool',con:'legs',fin:'textured',marble:false,decor:['vaso','livros'],desc:'aço escovado ripas horizontais metal LED frio industrial masculino sofisticado'},
+  {id:26,name:'Deep Charcoal + LED',cat:'bold',wall:'#111118',wood:'#1A1A28',slat:'vertical',light:'rgb',con:'floating',fin:'matte',marble:false,decor:['vaso'],desc:'carvão profundo ripas grafite RGB espetacular gaming premium impacto máximo'},
+  {id:27,name:'Asymmetrical Bold',cat:'bold',wall:'#141418',wood:'#3A2A1E',slat:'vertical',light:'warm',con:'asym',fin:'matte',marble:false,decor:['vaso','esculturas','plantas'],desc:'composição assimétrica bold volumes diferentes console autoral'},
+  {id:28,name:'Arched Niche Japandi',cat:'organic',wall:'#C8BBA8',wood:'#B8A080',slat:'none',light:'warm',con:'floating',fin:'matte',marble:false,arch:true,decor:['vaso','plantas'],desc:'nicho arqueado Japandi argamassa Wabi-Sabi iluminação interna arco orgânico'},
+  {id:29,name:'Integrated Bookshelf',cat:'organic',wall:'#F0E8DC',wood:'#C4945C',slat:'none',light:'warm',con:'floating',fin:'matte',marble:false,decor:['livros','vaso','plantas'],desc:'estante integrada painel TV livros objetos carvalho biblioteca chic'},
+  {id:30,name:'Tropical Wood + Plants',cat:'organic',wall:'#1E2818',wood:'#6B4226',slat:'vertical',light:'warm',con:'floating',fin:'matte',marble:false,decor:['plantas','vaso'],desc:'madeira tropical ripas verticais plantas exuberantes resort biofílico'}
+];
+
+var WALL_PRESETS=[
+  {h:'#1A1A1A',n:'Preto'},{h:'#2C2C38',n:'Grafite'},{h:'#2A2018',n:'Café'},
+  {h:'#4A3D35',n:'Castanho'},{h:'#C8BBA8',n:'Taupe'},{h:'#D4C5B0',n:'Bege'},
+  {h:'#E8E0D8',n:'Creme'},{h:'#F5F0EB',n:'Branco'},{h:'#2A3520',n:'Verde'},{h:'#1E1508',n:'Noite'}
+];
+var WOOD_PRESETS=[
+  {h:'#C9A87C',n:'Oak'},{h:'#5C3A1E',n:'Walnut'},{h:'#8B6340',n:'Teak'},
+  {h:'#1A1A1A',n:'Black'},{h:'#DEB887',n:'Light'}
+];
+var DECORS=[
+  {id:'plantas',lb:'🌿 Plantas'},{id:'vaso',lb:'🏺 Vasos'},{id:'livros',lb:'📚 Livros'},
+  {id:'esculturas',lb:'🗿 Esculturas'},{id:'velas',lb:'🕯️ Velas'}
+];
+
+// TV physical sizes (width in cm)
+var TV_CM = { 55:122, 65:144, 75:166, 85:188 };
+
+// ============================================================
+// STATE
+// ============================================================
+var S = {
+  mid:9, wall:'#2A2018', wood:'#C9A87C', slat:'vertical', light:'warm',
+  con:'floating', tvSize:65, shelves:2, fin:'matte',
+  decor:['vaso','plantas'], marble:false, mtype:'white', arch:false,
+  favs:[], cat:'all',
+  // Dimensions (cm)
+  panelW: 220, panelH: 240, floorDist: 30, tvH: 110, panelThick: 8,
+  showDims: true
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function hexRgb(h){
+  if(!h || h.charAt(0)!=='#') return {r:128,g:128,b:128};
+  var s=h.replace('#','');
+  if(s.length===3) s=s.split('').map(function(c){return c+c;}).join('');
+  return {r:parseInt(s.substr(0,2),16),g:parseInt(s.substr(2,2),16),b:parseInt(s.substr(4,2),16)};
+}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
+function lighter(h,a){var c=hexRgb(h);return 'rgb('+clamp(c.r+a,0,255)+','+clamp(c.g+a,0,255)+','+clamp(c.b+a,0,255)+')';}
+function darker(h,a){var c=hexRgb(h);return 'rgb('+clamp(c.r-a,0,255)+','+clamp(c.g-a,0,255)+','+clamp(c.b-a,0,255)+')';}
+function $(id){return document.getElementById(id);}
+
+function getDims(){
+  var c=$('preview-container');
+  return { w: c.offsetWidth||700, h: c.offsetHeight||620 };
+}
+
+// Calculate panel rect in pixels based on cm
+function getPanelRect(){
+  var d = getDims();
+  // Reserve margins for cotas
+  var marginH = S.showDims ? 60 : 30;
+  var marginTopV = S.showDims ? 50 : 30;
+  var marginBotV = S.showDims ? 90 : 60;
+  var availW = d.w - marginH*2;
+  var availH = d.h - marginTopV - marginBotV;
+  // Scale based on cm (fit panel into available)
+  var scaleW = availW / S.panelW;
+  var scaleH = availH / S.panelH;
+  var scale = Math.min(scaleW, scaleH);
+  var pxW = Math.round(S.panelW * scale);
+  var pxH = Math.round(S.panelH * scale);
+  var pxX = Math.round((d.w - pxW) / 2);
+  // Position panel: bottom = floor + floorDist scaled
+  var floorY = d.h - marginBotV + 20;
+  var pxY = floorY - pxH - Math.round(S.floorDist * scale);
+  return { x:pxX, y:pxY, w:pxW, h:pxH, scale:scale, floorY:floorY };
+}
+
+// ============================================================
+// MODEL GRID
+// ============================================================
+function buildModelGrid(){
+  var grid=$('modelGrid');
+  var list = S.cat==='all' ? MODELS : MODELS.filter(function(m){return m.cat===S.cat;});
+  grid.innerHTML = list.map(function(m){
+    return '<div class="model-card'+(m.id===S.mid?' active':'')+'" data-id="'+m.id+'" title="'+m.name+'">' +
+      '<div class="model-thumb">'+thumbHTML(m)+'</div>' +
+      '<div class="model-name">'+m.name+'</div>' +
+    '</div>';
+  }).join('');
+  grid.querySelectorAll('.model-card').forEach(function(card){
+    card.addEventListener('click', function(){ loadModel(+card.dataset.id); });
+  });
+}
+
+function thumbHTML(m){
+  var bg = m.marble ? marbleThumb(m.mtype||'white') : m.wall;
+  var html='<div style="position:absolute;inset:0;background:'+bg+';"></div>';
+  if(m.slat==='vertical'){
+    for(var i=0;i<7;i++){
+      html += '<div style="position:absolute;left:'+(i*(100/7)+1)+'%;top:0;bottom:0;width:'+(100/7-2)+'%;background:'+m.wood+';opacity:.9;"></div>';
+    }
+  } else if(m.slat==='horizontal'){
+    for(var i=0;i<5;i++){
+      html += '<div style="position:absolute;left:0;right:0;top:'+(i*(100/5)+1)+'%;height:'+(100/5-2)+'%;background:'+m.wood+';opacity:.9;"></div>';
+    }
+  } else if(m.marble){
+    html += '<svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 60 40" preserveAspectRatio="none"><line x1="0" y1="15" x2="60" y2="25" stroke="rgba(200,180,140,.4)" stroke-width="1.5"/><line x1="10" y1="0" x2="35" y2="40" stroke="rgba(180,160,120,.3)" stroke-width="1"/></svg>';
+  }
+  html += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);width:55%;height:34%;background:#080810;border:1.5px solid #111;border-radius:2px;z-index:5;"></div>';
+  return html;
+}
+
+function marbleThumb(t){
+  if(t==='calacatta'||t==='white') return 'linear-gradient(135deg,#F8F5EE,#EDE8E0)';
+  if(t==='dark') return 'linear-gradient(135deg,#2C1A0E,#3A220F)';
+  if(t==='carrara') return 'linear-gradient(135deg,#F2F0EE,#E8E6E2)';
+  if(t==='stone') return 'linear-gradient(135deg,#B8AFA5,#A8A098)';
+  if(t==='backlit') return 'radial-gradient(ellipse,rgba(255,210,130,.3),#F5F0E8)';
+  return '#F0EDE8';
+}
+
+// ============================================================
+// LOAD MODEL
+// ============================================================
+function loadModel(id){
+  var m = MODELS.filter(function(x){return x.id===id;})[0];
+  if(!m) return;
+  S.mid=id; S.wall=m.wall; S.wood=m.wood; S.slat=m.slat;
+  S.light=m.light; S.con=m.con; S.fin=m.fin;
+  S.decor=m.decor.slice();
+  S.marble=m.marble||false;
+  S.mtype=m.mtype||'white';
+  S.arch=m.arch||false;
+  syncUI();
+  redraw();
+  buildModelGrid();
+}
+
+function syncUI(){
+  $('wallPicker').value = S.wall.charAt(0)==='#'?S.wall:'#1a1a1a';
+  setActive('slat',S.slat); setActive('light',S.light);
+  setActive('console',S.con); setActive('finish',S.fin);
+  setActive('tv',String(S.tvSize));
+  $('shelfRange').value=S.shelves; $('shelfVal').textContent=S.shelves;
+  $('pwRange').value=S.panelW; $('pwVal').textContent=S.panelW;
+  $('phRange').value=S.panelH; $('phVal').textContent=S.panelH;
+  $('fdRange').value=S.floorDist; $('fdVal').textContent=S.floorDist;
+  $('thRange').value=S.tvH; $('thVal').textContent=S.tvH;
+  $('ptRange').value=S.panelThick; $('ptVal').textContent=S.panelThick;
+  $('showDims').checked=S.showDims;
+  DECORS.forEach(function(d){
+    var el=$('dc_'+d.id);
+    if(el) el.checked = S.decor.indexOf(d.id)!==-1;
+  });
+  document.querySelectorAll('.wd-dot').forEach(function(b){ b.classList.toggle('active', b.dataset.h===S.wood); });
+  document.querySelectorAll('.wl-dot').forEach(function(b){ b.classList.toggle('active', b.dataset.h===S.wall); });
+}
+
+function setActive(group,val){
+  document.querySelectorAll('[data-group="'+group+'"] .toggle-opt').forEach(function(o){
+    o.classList.toggle('active', o.dataset.v===val);
+  });
+}
+
+// ============================================================
+// CONTROL BINDINGS
+// ============================================================
+function bindToggleGroups(){
+  document.querySelectorAll('.toggle-group').forEach(function(g){
+    var name = g.dataset.group;
+    g.querySelectorAll('.toggle-opt').forEach(function(opt){
+      opt.addEventListener('click', function(){
+        g.querySelectorAll('.toggle-opt').forEach(function(o){o.classList.remove('active');});
+        opt.classList.add('active');
+        var v = opt.dataset.v;
+        if(name==='slat') S.slat=v;
+        else if(name==='light') S.light=v;
+        else if(name==='console') S.con=v;
+        else if(name==='tv') S.tvSize=+v;
+        else if(name==='finish') S.fin=v;
+        redraw();
+      });
+    });
+  });
+}
+
+function buildColorPresets(){
+  $('wallPresets').innerHTML = WALL_PRESETS.map(function(c){
+    return '<div class="color-dot wl-dot'+(c.h===S.wall?' active':'')+'" style="background:'+c.h+';" data-h="'+c.h+'" title="'+c.n+'"></div>';
+  }).join('');
+  $('woodPresets').innerHTML = WOOD_PRESETS.map(function(c){
+    return '<div class="color-dot wd-dot'+(c.h===S.wood?' active':'')+'" style="background:'+c.h+';" data-h="'+c.h+'" title="'+c.n+'"></div>';
+  }).join('');
+
+  document.querySelectorAll('.wl-dot').forEach(function(b){
+    b.addEventListener('click', function(){
+      S.wall=b.dataset.h; $('wallPicker').value=S.wall;
+      document.querySelectorAll('.wl-dot').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); redraw();
+    });
+  });
+  document.querySelectorAll('.wd-dot').forEach(function(b){
+    b.addEventListener('click', function(){
+      S.wood=b.dataset.h;
+      document.querySelectorAll('.wd-dot').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); redraw();
+    });
+  });
+  $('wallPicker').addEventListener('input', function(e){
+    S.wall=e.target.value;
+    document.querySelectorAll('.wl-dot').forEach(function(x){x.classList.remove('active');});
+    redraw();
+  });
+}
+
+function buildDecorChecks(){
+  $('decorChecks').innerHTML = DECORS.map(function(d){
+    return '<label class="decor-row"><input type="checkbox" id="dc_'+d.id+'" '+(S.decor.indexOf(d.id)!==-1?'checked':'')+'><span>'+d.lb+'</span></label>';
+  }).join('');
+  DECORS.forEach(function(d){
+    $('dc_'+d.id).addEventListener('change', function(e){
+      if(e.target.checked){ if(S.decor.indexOf(d.id)===-1) S.decor.push(d.id); }
+      else { S.decor = S.decor.filter(function(x){return x!==d.id;}); }
+      redraw();
+    });
+  });
+}
+
+function setupCatFilter(){
+  $('catFilter').querySelectorAll('.cat-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.cat-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); S.cat=b.dataset.cat; buildModelGrid();
+    });
+  });
+}
+
+function setupSliders(){
+  var binds = [
+    ['shelfRange','shelfVal','shelves'],
+    ['pwRange','pwVal','panelW'],
+    ['phRange','phVal','panelH'],
+    ['fdRange','fdVal','floorDist'],
+    ['thRange','thVal','tvH'],
+    ['ptRange','ptVal','panelThick']
+  ];
+  binds.forEach(function(b){
+    $(b[0]).addEventListener('input', function(e){
+      S[b[2]] = +e.target.value;
+      $(b[1]).textContent = e.target.value;
+      redraw();
+    });
+  });
+  $('showDims').addEventListener('change', function(e){
+    S.showDims = e.target.checked;
+    redraw();
+  });
+}
+
+function setupCollapsibleSections(){
+  document.querySelectorAll('.section-label[data-section]').forEach(function(lbl){
+    lbl.addEventListener('click', function(){
+      var key = lbl.dataset.section;
+      var body = document.querySelector('[data-section-body="'+key+'"]');
+      if(!body) return;
+      lbl.classList.toggle('collapsed');
+      if(lbl.classList.contains('collapsed')){
+        body.style.maxHeight = '0px';
+        body.classList.add('collapsed');
+      } else {
+        body.classList.remove('collapsed');
+        body.style.maxHeight = '';
+      }
+    });
+  });
+}
+
+function setupMobileNav(){
+  $('mobileNav').querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click', function(){
+      $('mobileNav').querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      var pane = b.dataset.pane;
+      document.querySelectorAll('[data-pane]').forEach(function(el){
+        if(el.tagName==='BUTTON') return;
+        el.classList.toggle('pane-hidden', el.dataset.pane !== pane);
+      });
+      // Re-draw if preview comes back
+      if(pane==='preview') setTimeout(redraw, 50);
+    });
+  });
+}
+
+// ============================================================
+// PREVIEW RENDERING
+// ============================================================
+function tvRatio(){ return ({55:.50,65:.58,75:.65,85:.72})[S.tvSize]||.58; }
+
+function redraw(){
+  rWall(); rPanelFrame(); rMarble(); rSlats(); rFinish(); rCeil();
+  rTV(); rConsole(); rShelves(); rLED(); rDecor(); rDims();
+  rStats(); rPrompt(); rTitle();
+}
+
+function rWall(){
+  var el=$('l-wall');
+  var bg=S.wall;
+  if(S.fin==='satin')      bg='linear-gradient(155deg,'+lighter(S.wall,14)+' 0%,'+S.wall+' 55%,'+darker(S.wall,8)+' 100%)';
+  else if(S.fin==='textured') bg='radial-gradient(ellipse at 28% 18%,'+lighter(S.wall,10)+' 0%,'+S.wall+' 45%,'+darker(S.wall,10)+' 100%)';
+  el.style.background=bg;
+}
+
+function rPanelFrame(){
+  var p = getPanelRect();
+  var f = $('panel-frame');
+  f.style.cssText = 'position:absolute;left:'+p.x+'px;top:'+p.y+'px;width:'+p.w+'px;height:'+p.h+'px;'+
+    'border:1px solid rgba(255,255,255,.04);box-shadow:0 0 0 1px rgba(0,0,0,.4),0 25px 60px rgba(0,0,0,.4);'+
+    'border-radius:3px;pointer-events:none;z-index:11;transition:all .4s;';
+}
+
+function rMarble(){
+  var el=$('l-marble');
+  var p = getPanelRect();
+  if(!S.marble){ el.style.opacity='0'; el.innerHTML=''; return; }
+  var t=S.mtype, bg='', veins='';
+  if(t==='calacatta'){
+    bg='linear-gradient(135deg,#F9F6EE 0%,#F2EDE2 40%,#F8F4EC 100%)';
+    veins='<line x1="0%" y1="28%" x2="100%" y2="44%" stroke="rgba(200,178,138,.4)" stroke-width="2.5"/>'+
+          '<line x1="18%" y1="0%" x2="55%" y2="100%" stroke="rgba(185,162,120,.28)" stroke-width="1.8"/>'+
+          '<line x1="68%" y1="5%" x2="88%" y2="100%" stroke="rgba(195,172,128,.22)" stroke-width="1.2"/>'+
+          '<line x1="25%" y1="10%" x2="48%" y2="42%" stroke="'+S.wood+'66" stroke-width="1.5"/>';
+  } else if(t==='dark'){
+    bg='linear-gradient(135deg,#2C1A0E 0%,#3A2215 40%,#2A180A 100%)';
+    veins='<line x1="0%" y1="22%" x2="100%" y2="40%" stroke="rgba(180,130,60,.45)" stroke-width="3"/>'+
+          '<line x1="28%" y1="0%" x2="65%" y2="100%" stroke="rgba(160,110,50,.32)" stroke-width="2"/>'+
+          '<line x1="62%" y1="8%" x2="95%" y2="72%" stroke="rgba(200,150,80,.38)" stroke-width="2.5"/>';
+  } else if(t==='carrara'){
+    bg='linear-gradient(135deg,#F4F2F0 0%,#EAE8E4 50%,#F4F2F0 100%)';
+    veins='<line x1="0%" y1="35%" x2="100%" y2="50%" stroke="rgba(170,165,158,.22)" stroke-width="1.8"/>'+
+          '<line x1="22%" y1="0%" x2="60%" y2="100%" stroke="rgba(160,155,148,.18)" stroke-width="1.2"/>';
+  } else if(t==='stone'){
+    bg='linear-gradient(160deg,#B8AFA5 0%,#A8A098 50%,#B8AFA5 100%)';
+  } else if(t==='backlit'){
+    bg='radial-gradient(ellipse at 50% 30%,rgba(255,210,130,.4) 0%,rgba(248,244,230,.15) 40%,transparent 70%),linear-gradient(135deg,#F5F0E8,#EDE8DC)';
+    veins='<line x1="30%" y1="0%" x2="65%" y2="100%" stroke="rgba(200,178,138,.22)" stroke-width="1.5"/>';
+  } else { bg=marbleThumb(t); }
+  el.style.cssText = 'position:absolute;left:'+p.x+'px;top:'+p.y+'px;width:'+p.w+'px;height:'+p.h+'px;'+
+    'background:'+bg+';opacity:1;pointer-events:none;border-radius:3px;overflow:hidden;';
+  el.innerHTML = veins ? '<svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.75;" preserveAspectRatio="none">'+veins+'</svg>' : '';
+}
+
+function rSlats(){
+  var el=$('l-slats');
+  var p = getPanelRect();
+  if(S.slat==='none'){ el.style.opacity='0'; el.innerHTML=''; return; }
+  el.style.cssText = 'position:absolute;left:'+p.x+'px;top:'+p.y+'px;width:'+p.w+'px;height:'+p.h+'px;'+
+    'opacity:1;pointer-events:none;overflow:hidden;border-radius:3px;';
+  var html='';
+  if(S.slat==='vertical'){
+    var cnt = Math.max(8, Math.round(S.panelW / 8));
+    var sw = 100/cnt;
+    for(var i=0;i<cnt;i++){
+      var shade = i%2===0 ? S.wood : darker(S.wood,6);
+      html += '<div style="position:absolute;left:'+(i*sw)+'%;top:0;bottom:0;width:'+(sw-.4)+'%;'+
+        'background:linear-gradient(90deg,'+lighter(S.wood,18)+' 0%,'+shade+' 30%,'+darker(S.wood,18)+' 100%);"></div>';
+    }
+  } else if(S.slat==='horizontal'){
+    var cnt = Math.max(6, Math.round(S.panelH / 15));
+    var sh = 100/cnt;
+    for(var i=0;i<cnt;i++){
+      var shade = i%2===0 ? S.wood : darker(S.wood,5);
+      html += '<div style="position:absolute;left:0;right:0;top:'+(i*sh)+'%;height:'+(sh-.4)+'%;'+
+        'background:linear-gradient(180deg,'+lighter(S.wood,15)+' 0%,'+shade+' 40%,'+darker(S.wood,14)+' 100%);"></div>';
+    }
+  } else if(S.slat==='geometric'){
+    html = '<div style="position:absolute;inset:0;background-image:'+
+      'repeating-linear-gradient(45deg,transparent,transparent 22px,'+S.wood+'55 22px,'+S.wood+'55 24px),'+
+      'repeating-linear-gradient(-45deg,transparent,transparent 22px,'+S.wood+'33 22px,'+S.wood+'33 24px);"></div>';
+  }
+  el.innerHTML = html;
+}
+
+function rFinish(){
+  var el=$('l-finish');
+  var p = getPanelRect();
+  if(S.fin==='satin'){
+    el.style.cssText = 'position:absolute;left:'+p.x+'px;top:'+p.y+'px;width:'+p.w+'px;height:'+p.h+'px;'+
+      'pointer-events:none;border-radius:3px;background:linear-gradient(155deg,rgba(255,255,255,.07) 0%,transparent 60%);opacity:1;';
+  } else if(S.fin==='textured'){
+    el.style.cssText = 'position:absolute;left:'+p.x+'px;top:'+p.y+'px;width:'+p.w+'px;height:'+p.h+'px;'+
+      "pointer-events:none;border-radius:3px;opacity:1;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='1' height='1' fill='rgba(0,0,0,0.08)'/%3E%3Crect x='2' y='3' width='1' height='1' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E\");";
+  } else {
+    el.style.opacity='0'; el.style.background='transparent';
+  }
+}
+
+function rCeil(){
+  var ceil=$('l-ceil');
+  if(S.light==='none'){ ceil.style.opacity='0'; return; }
+  var col='rgba(255,175,60,.13)';
+  if(S.light==='cool') col='rgba(150,185,255,.12)';
+  else if(S.light==='rgb') col='rgba(180,80,255,.12)';
+  else if(S.light==='hidden') col='rgba(255,180,80,.08)';
+  ceil.style.background='radial-gradient(ellipse at 50% -15%,'+col+' 0%,transparent 72%)';
+  ceil.style.opacity='1';
+}
+
+function rTV(){
+  var p = getPanelRect();
+  var tvCmW = TV_CM[S.tvSize] || 144;
+  var tvCmH = tvCmW * 9/16; // 16:9 ratio
+  // TV width = real cm * scale
+  var tvW = Math.round(tvCmW * p.scale);
+  var tvH = Math.round(tvCmH * p.scale);
+  // TV center (vertical) = floorY - tvH (in cm) up from floor
+  var tvCenterY_cm = S.tvH; // user-defined height from floor to TV center
+  var tvBottomY = p.floorY - Math.round((tvCenterY_cm - tvCmH/2) * p.scale);
+  var tvTop = tvBottomY - tvH;
+  var tvX = Math.round((getDims().w - tvW)/2);
+
+  var tv=$('tv-el');
+  tv.style.cssText='position:absolute;left:'+tvX+'px;top:'+tvTop+'px;width:'+tvW+'px;height:'+tvH+'px;'+
+    'border:'+Math.max(5,Math.round(tvW*0.012))+'px solid #0d0d0d;border-bottom:'+Math.max(8,Math.round(tvW*0.02))+'px solid #0d0d0d;'+
+    'border-radius:5px;overflow:hidden;z-index:20;'+
+    'box-shadow:0 24px 65px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.04),inset 0 0 0 1px rgba(255,255,255,.02);'+
+    'transition:all .4s ease;';
+  tv.innerHTML =
+    '<div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,#0d1030 0%,#020208 100%);"></div>'+
+    '<div style="position:absolute;top:0;left:0;right:0;height:42%;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent);pointer-events:none;"></div>'+
+    '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.18);letter-spacing:3px;font-family:monospace;font-weight:600;">● TV '+S.tvSize+'"</div>';
+}
+
+function rConsole(){
+  var p = getPanelRect();
+  var d = getDims();
+  var tvCmW = TV_CM[S.tvSize] || 144;
+  var tvW = Math.round(tvCmW * p.scale);
+  var wBg = 'linear-gradient(180deg,'+lighter(S.wood,12)+' 0%,'+S.wood+' 55%,'+darker(S.wood,12)+' 100%)';
+  var c=$('l-console');
+  // Console sits between panel bottom and floor (or at floor)
+  var cH = Math.max(28, Math.round(45 * p.scale)); // ~45 cm tall console
+  // Position based on type
+  var bottom = d.h - p.floorY + Math.round(S.floorDist * p.scale * 0.5);
+  var css='', inner='';
+
+  if(S.con==='floating'){
+    // Sit just below TV
+    var tvBottomY = p.floorY - Math.round((S.tvH - (TV_CM[S.tvSize]||144)*9/32) * p.scale);
+    var cTop = tvBottomY + 18;
+    var cW = Math.round(tvW * 1.15);
+    var left = Math.round((d.w-cW)/2);
+    css = 'left:'+left+'px;top:'+cTop+'px;width:'+cW+'px;height:'+cH+'px;'+
+          'background:'+wBg+';border-radius:4px;'+
+          'box-shadow:0 12px 32px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.14);';
+    inner = '<div style="position:absolute;left:32%;top:22%;bottom:22%;width:1px;background:rgba(0,0,0,.35);"></div>'+
+            '<div style="position:absolute;left:32%;top:47%;right:32%;height:1px;background:rgba(0,0,0,.25);"></div>'+
+            '<div style="position:absolute;left:8%;top:28%;width:18%;height:5px;background:rgba(0,0,0,.22);border-radius:2px;"></div>'+
+            '<div style="position:absolute;right:8%;top:28%;width:18%;height:5px;background:rgba(0,0,0,.22);border-radius:2px;"></div>';
+  } else if(S.con==='legs'){
+    var cW = Math.round(tvW * 1.1);
+    var left = Math.round((d.w-cW)/2);
+    var legH = Math.round(d.h*0.05);
+    css = 'left:'+left+'px;bottom:'+(d.h - p.floorY + legH)+'px;width:'+cW+'px;height:'+cH+'px;'+
+          'background:'+wBg+';border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.6);';
+    inner = '<div style="position:absolute;bottom:-'+legH+'px;left:8%;width:8px;height:'+legH+'px;background:'+darker(S.wood,22)+';border-radius:0 0 3px 3px;"></div>'+
+            '<div style="position:absolute;bottom:-'+legH+'px;right:8%;width:8px;height:'+legH+'px;background:'+darker(S.wood,22)+';border-radius:0 0 3px 3px;"></div>'+
+            '<div style="position:absolute;left:32%;top:28%;right:32%;height:4px;background:rgba(0,0,0,.2);border-radius:2px;"></div>';
+  } else if(S.con==='fullwidth'){
+    var cW = p.w;
+    var left = p.x;
+    var tvBottomY = p.floorY - Math.round((S.tvH - (TV_CM[S.tvSize]||144)*9/32) * p.scale);
+    var cTop = tvBottomY + 18;
+    css = 'left:'+left+'px;top:'+cTop+'px;width:'+cW+'px;height:'+cH+'px;'+
+          'background:'+wBg+';border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.65);';
+    inner = '<div style="position:absolute;left:0;top:0;width:5px;height:100%;background:rgba(255,255,255,.08);border-radius:4px 0 0 4px;"></div>'+
+            '<div style="position:absolute;left:34%;top:28%;width:32%;height:4px;background:rgba(0,0,0,.22);border-radius:2px;"></div>';
+  } else if(S.con==='asym'){
+    var cW = Math.round(tvW * 0.85);
+    var left = p.x + 10;
+    var tvBottomY = p.floorY - Math.round((S.tvH - (TV_CM[S.tvSize]||144)*9/32) * p.scale);
+    var cTop = tvBottomY + 18;
+    var extW = Math.round(tvW * 0.14);
+    css = 'left:'+left+'px;top:'+cTop+'px;width:'+cW+'px;height:'+cH+'px;'+
+          'background:'+wBg+';border-radius:4px 0 0 4px;box-shadow:0 10px 28px rgba(0,0,0,.6);';
+    inner = '<div style="position:absolute;right:-'+extW+'px;top:0;bottom:0;width:'+extW+'px;background:'+darker(S.wood,18)+';border-radius:0 4px 4px 0;"></div>'+
+            '<div style="position:absolute;left:18%;top:28%;width:22%;height:4px;background:rgba(0,0,0,.22);border-radius:2px;"></div>';
+  }
+  c.style.cssText = 'position:absolute;z-index:15;transition:all .4s;overflow:visible;'+css;
+  c.innerHTML = inner;
+}
+
+function rShelves(){
+  var el=$('l-shelves');
+  var p = getPanelRect();
+  var tvCmW = TV_CM[S.tvSize] || 144;
+  var tvW = Math.round(tvCmW * p.scale);
+  var cx = getDims().w/2;
+  var sW = Math.max(60, Math.round(p.w * 0.18));
+  var sH = 10;
+  var wBg = 'linear-gradient(180deg,'+lighter(S.wood,12)+' 0%,'+S.wood+' 60%,'+darker(S.wood,18)+' 100%)';
+  // Position shelves inside the panel, at fixed % heights
+  var positions = [
+    { x: p.x + 12, y: p.y + Math.round(p.h*0.15) },
+    { x: p.x + p.w - sW - 12, y: p.y + Math.round(p.h*0.15) },
+    { x: p.x + 12, y: p.y + Math.round(p.h*0.65) },
+    { x: p.x + p.w - sW - 12, y: p.y + Math.round(p.h*0.65) }
+  ];
+  var html='';
+  var cnt = Math.min(S.shelves, 4);
+  for(var i=0;i<cnt;i++){
+    var pp = positions[i];
+    html += '<div style="position:absolute;left:'+pp.x+'px;top:'+pp.y+'px;width:'+sW+'px;height:'+sH+'px;'+
+      'background:'+wBg+';border-radius:3px;box-shadow:0 4px 12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.14);"></div>';
+  }
+  el.innerHTML=html;
+}
+
+function rLED(){
+  var led=$('led-strip');
+  led.className='';
+  if(S.light==='none'){ led.style.cssText='display:none;'; return; }
+  var p = getPanelRect();
+  var tvCmW = TV_CM[S.tvSize] || 144;
+  var tvCmH = tvCmW * 9/16;
+  var tvW = Math.round(tvCmW * p.scale);
+  var tvH = Math.round(tvCmH * p.scale);
+  var tvBottomY = p.floorY - Math.round((S.tvH - tvCmH/2) * p.scale);
+  var ledY = tvBottomY + Math.max(20, Math.round(tvH * 0.18));
+
+  var col, glow;
+  switch(S.light){
+    case 'warm':
+      col='linear-gradient(90deg,transparent 0%,rgba(255,185,70,.95) 15%,rgba(255,185,70,.95) 85%,transparent 100%)';
+      glow='rgba(255,160,40,.55)'; led.className='led-warm'; break;
+    case 'cool':
+      col='linear-gradient(90deg,transparent 0%,rgba(175,210,255,.95) 15%,rgba(175,210,255,.95) 85%,transparent 100%)';
+      glow='rgba(150,190,255,.55)'; led.className='led-cool'; break;
+    case 'rgb':
+      col='linear-gradient(90deg,rgba(255,0,150,.95) 0%,rgba(0,150,255,.95) 50%,rgba(0,255,100,.95) 100%)';
+      glow='rgba(180,0,255,.5)'; led.className='led-rgb'; break;
+    case 'hidden':
+      col='linear-gradient(90deg,transparent 0%,rgba(255,200,100,.5) 20%,rgba(255,200,100,.5) 80%,transparent 100%)';
+      glow='rgba(255,175,60,.25)'; break;
+  }
+  led.style.cssText='position:absolute;left:'+(p.x+10)+'px;width:'+(p.w-20)+'px;top:'+ledY+'px;height:3px;'+
+    'border-radius:2px;background:'+col+';box-shadow:0 0 18px 8px '+glow+', 0 0 40px 14px '+glow.replace(/\.\d+/,'.25')+';'+
+    'pointer-events:none;z-index:14;transition:top .4s,left .4s,width .4s;';
+}
+
+function rDecor(){
+  var el=$('l-decor');
+  var p = getPanelRect();
+  var d = getDims();
+  var tvCmW = TV_CM[S.tvSize] || 144;
+  var tvW = Math.round(tvCmW * p.scale);
+  var cx = d.w/2;
+  var floorY = p.floorY;
+  var html='';
+
+  if(S.decor.indexOf('plantas')!==-1){
+    html += makePlant(cx - tvW/2 - 60, floorY - 8, Math.round(p.h*0.42), 'L');
+    html += makePlant(cx + tvW/2 + 18, floorY - 8, Math.round(p.h*0.38), 'R');
+  }
+  if(S.decor.indexOf('vaso')!==-1){
+    var vx = Math.round(cx + tvW*0.3);
+    html += '<div style="position:absolute;left:'+vx+'px;top:'+(floorY-50)+'px;width:22px;height:36px;'+
+      'background:linear-gradient(180deg,#D4C4B0,#B8A890);border-radius:4px 4px 8px 8px;'+
+      'box-shadow:0 4px 10px rgba(0,0,0,.45);z-index:19;"></div>';
+    if(S.shelves>0){
+      html += '<div style="position:absolute;left:'+(p.x+18)+'px;top:'+(p.y + Math.round(p.h*0.15) - 22)+'px;'+
+        'width:16px;height:22px;background:linear-gradient(180deg,#C0C0C0,#909090);'+
+        'border-radius:2px 2px 5px 5px;box-shadow:0 2px 7px rgba(0,0,0,.4);"></div>';
+    }
+  }
+  if(S.decor.indexOf('livros')!==-1){
+    var bx = p.x + p.w - 100;
+    var by = p.y + Math.round(p.h*0.15) - 38;
+    var bc=['#8B2020','#205080','#206030','#806020','#602080','#406040'];
+    for(var i=0;i<6;i++){
+      var bh = 34 + Math.round(Math.sin(i*1.3)*9);
+      html += '<div style="position:absolute;left:'+(bx+i*12)+'px;top:'+by+'px;width:10px;height:'+bh+'px;'+
+        'background:'+bc[i]+';border-radius:1px;box-shadow:1px 0 3px rgba(0,0,0,.35);"></div>';
+    }
+  }
+  if(S.decor.indexOf('esculturas')!==-1){
+    var sx = Math.round(cx + tvW/2 + 28);
+    var sy = floorY - 80;
+    html += '<div style="position:absolute;left:'+sx+'px;top:'+sy+'px;width:26px;height:42px;'+
+      'background:linear-gradient(180deg,#D0C8C0,#B0A898);border-radius:50% 50% 20% 20%;'+
+      'box-shadow:0 5px 12px rgba(0,0,0,.5);z-index:19;"></div>';
+  }
+  if(S.decor.indexOf('velas')!==-1){
+    for(var i=0;i<3;i++){
+      var vx = Math.round(cx - tvW*0.15 + i*28);
+      html += '<div style="position:absolute;left:'+vx+'px;top:'+(floorY-38)+'px;width:8px;height:30px;'+
+        'background:linear-gradient(180deg,#F5F0E0,#E8E0C8);border-radius:3px;box-shadow:0 2px 7px rgba(0,0,0,.35);z-index:19;">'+
+        '<div style="position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:4px;height:8px;'+
+        'background:radial-gradient(ellipse at 50% 80%,#FFF066 0%,#FFAA00 50%,#FF6600 100%);'+
+        'border-radius:50% 50% 0 0;box-shadow:0 0 10px 5px rgba(255,140,0,.5);animation:flicker 1.6s ease-in-out infinite;"></div>'+
+        '</div>';
+    }
+  }
+
+  var m = MODELS.filter(function(x){return x.id===S.mid;})[0];
+  if(m && m.arch){
+    var aw = Math.round(p.w * 0.5);
+    var ah = Math.round(p.h * 0.4);
+    var ax = Math.round(cx - aw/2);
+    var ay = p.y + 18;
+    html += '<div style="position:absolute;left:'+ax+'px;top:'+ay+'px;width:'+aw+'px;height:'+ah+'px;'+
+      'border-radius:50% 50% 0 0;background:'+darker(S.wall,18)+';'+
+      'box-shadow:inset 0 10px 30px rgba(0,0,0,.32);overflow:hidden;z-index:12;">'+
+      '<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% -5%,rgba(255,200,100,.25),transparent 70%);"></div>'+
+      '<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:22px;height:55px;'+
+      'background:linear-gradient(180deg,#C8B898,#A89878);border-radius:3px;box-shadow:0 4px 10px rgba(0,0,0,.4);"></div>'+
+      '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function makePlant(x,y,h,side){
+  x=Math.round(x); y=Math.round(y); h=Math.round(h);
+  var lc='#2A5A2A', sc='#4A3020';
+  var leafL = side==='L' ? 18 : 3;
+  var rot1  = side==='L' ? -20 : 20;
+  var leafL2= side==='L' ? 5  : 12;
+  var rot2  = side==='L' ? 30 : -30;
+  var leafL3= side==='L' ? 14 : 8;
+  var rot3  = side==='L' ? -35 : 35;
+  return '<div style="position:absolute;left:'+x+'px;top:'+(y-h)+'px;width:44px;height:'+h+'px;z-index:19;">'+
+    '<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:30px;height:'+Math.round(h*0.32)+'px;background:linear-gradient(180deg,#C8B898,#A89878);border-radius:4px 4px 10px 10px;box-shadow:0 4px 10px rgba(0,0,0,.45);"></div>'+
+    '<div style="position:absolute;bottom:'+Math.round(h*0.3)+'px;left:50%;transform:translateX(-50%);width:3px;height:'+Math.round(h*0.4)+'px;background:'+sc+';border-radius:2px;"></div>'+
+    '<div style="position:absolute;bottom:'+Math.round(h*0.56)+'px;left:'+leafL+'px;width:28px;height:22px;background:'+lc+';border-radius:50% 0 50% 50%;transform:rotate('+rot1+'deg);opacity:.9;"></div>'+
+    '<div style="position:absolute;bottom:'+Math.round(h*0.66)+'px;left:'+leafL2+'px;width:24px;height:20px;background:'+lighter(lc,12)+';border-radius:50% 50% 0 50%;transform:rotate('+rot2+'deg);opacity:.85;"></div>'+
+    '<div style="position:absolute;bottom:'+Math.round(h*0.73)+'px;left:'+leafL3+'px;width:22px;height:18px;background:'+lc+';border-radius:50% 0 50% 50%;transform:rotate('+rot3+'deg);opacity:.9;"></div>'+
+  '</div>';
+}
+
+// ============================================================
+// DIMENSIONS (COTAS)
+// ============================================================
+function rDims(){
+  var svg = $('l-dims');
+  if(!S.showDims){ svg.innerHTML=''; svg.style.opacity='0'; return; }
+  svg.style.opacity='1';
+  var d = getDims();
+  var p = getPanelRect();
+  svg.setAttribute('viewBox', '0 0 '+d.w+' '+d.h);
+  svg.setAttribute('width', d.w);
+  svg.setAttribute('height', d.h);
+  svg.style.position='absolute'; svg.style.inset='0'; svg.style.pointerEvents='none';
+
+  var COTA='#E8C97A', TXT='#FFE8B0', BG='rgba(20,20,30,0.85)';
+  var cotaW = 1.5;
+  var fontSize = Math.max(10, Math.min(12, d.w/65));
+
+  var parts = [];
+
+  // helper to make a label with background box
+  function label(x, y, txt, anchor){
+    var w = txt.length * fontSize * 0.55 + 8;
+    var h = fontSize + 6;
+    var bx = anchor==='middle' ? x - w/2 : (anchor==='end' ? x - w : x);
+    parts.push('<rect x="'+bx+'" y="'+(y - h + 3)+'" width="'+w+'" height="'+h+'" fill="'+BG+'" rx="3"/>');
+    parts.push('<text x="'+x+'" y="'+y+'" fill="'+TXT+'" font-size="'+fontSize+'" font-weight="700" text-anchor="'+(anchor||'start')+'" font-family="Segoe UI, sans-serif">'+txt+'</text>');
+  }
+
+  // 1. Panel width (top)
+  var topY = p.y - 25;
+  parts.push('<line x1="'+p.x+'" y1="'+topY+'" x2="'+(p.x+p.w)+'" y2="'+topY+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+p.x+'" y1="'+(topY-6)+'" x2="'+p.x+'" y2="'+(topY+6)+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(p.x+p.w)+'" y1="'+(topY-6)+'" x2="'+(p.x+p.w)+'" y2="'+(topY+6)+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  // tick guides from panel
+  parts.push('<line x1="'+p.x+'" y1="'+(p.y)+'" x2="'+p.x+'" y2="'+(topY-2)+'" stroke="'+COTA+'" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>');
+  parts.push('<line x1="'+(p.x+p.w)+'" y1="'+(p.y)+'" x2="'+(p.x+p.w)+'" y2="'+(topY-2)+'" stroke="'+COTA+'" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>');
+  label(p.x + p.w/2, topY - 7, S.panelW+' cm', 'middle');
+
+  // 2. Panel height (left)
+  var leftX = p.x - 28;
+  parts.push('<line x1="'+leftX+'" y1="'+p.y+'" x2="'+leftX+'" y2="'+(p.y+p.h)+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(leftX-6)+'" y1="'+p.y+'" x2="'+(leftX+6)+'" y2="'+p.y+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(leftX-6)+'" y1="'+(p.y+p.h)+'" x2="'+(leftX+6)+'" y2="'+(p.y+p.h)+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+p.x+'" y1="'+p.y+'" x2="'+(leftX-2)+'" y2="'+p.y+'" stroke="'+COTA+'" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>');
+  parts.push('<line x1="'+p.x+'" y1="'+(p.y+p.h)+'" x2="'+(leftX-2)+'" y2="'+(p.y+p.h)+'" stroke="'+COTA+'" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>');
+  // rotated label
+  var midY = p.y + p.h/2;
+  parts.push('<rect x="'+(leftX - 36)+'" y="'+(midY-12)+'" width="32" height="20" fill="'+BG+'" rx="3"/>');
+  parts.push('<text x="'+(leftX-20)+'" y="'+(midY+3)+'" fill="'+TXT+'" font-size="'+fontSize+'" font-weight="700" text-anchor="middle" font-family="Segoe UI, sans-serif" transform="rotate(-90 '+(leftX-20)+' '+(midY+3)+')">'+S.panelH+' cm</text>');
+
+  // 3. Floor distance (right side bottom)
+  var rightX = p.x + p.w + 28;
+  var pBot = p.y + p.h;
+  parts.push('<line x1="'+rightX+'" y1="'+pBot+'" x2="'+rightX+'" y2="'+p.floorY+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(rightX-6)+'" y1="'+pBot+'" x2="'+(rightX+6)+'" y2="'+pBot+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(rightX-6)+'" y1="'+p.floorY+'" x2="'+(rightX+6)+'" y2="'+p.floorY+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(p.x+p.w)+'" y1="'+pBot+'" x2="'+(rightX-2)+'" y2="'+pBot+'" stroke="'+COTA+'" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>');
+  parts.push('<line x1="'+(p.x+p.w)+'" y1="'+p.floorY+'" x2="'+(rightX-2)+'" y2="'+p.floorY+'" stroke="'+COTA+'" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>');
+  label(rightX + 10, (pBot + p.floorY)/2 + 4, S.floorDist+' cm', 'start');
+
+  // 4. Floor line
+  parts.push('<line x1="20" y1="'+p.floorY+'" x2="'+(d.w-20)+'" y2="'+p.floorY+'" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>');
+  parts.push('<line x1="20" y1="'+(p.floorY+5)+'" x2="'+(d.w-20)+'" y2="'+(p.floorY+5)+'" stroke="rgba(255,255,255,0.12)" stroke-width="0.6" stroke-dasharray="4,3"/>');
+
+  // 5. TV width (bottom)
+  var tvCmW = TV_CM[S.tvSize] || 144;
+  var tvCmH = tvCmW * 9/16;
+  var tvW = Math.round(tvCmW * p.scale);
+  var tvH_px = Math.round(tvCmH * p.scale);
+  var tvBottomY = p.floorY - Math.round((S.tvH - tvCmH/2) * p.scale);
+  var tvTopY = tvBottomY - tvH_px;
+  var tvLeft = (d.w - tvW)/2;
+  var tvRight = tvLeft + tvW;
+  var botY = p.floorY + 28;
+  parts.push('<line x1="'+tvLeft+'" y1="'+botY+'" x2="'+tvRight+'" y2="'+botY+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+tvLeft+'" y1="'+(botY-5)+'" x2="'+tvLeft+'" y2="'+(botY+5)+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+tvRight+'" y1="'+(botY-5)+'" x2="'+tvRight+'" y2="'+(botY+5)+'" stroke="'+COTA+'" stroke-width="'+cotaW+'"/>');
+  label((tvLeft + tvRight)/2, botY + 16, 'TV '+S.tvSize+'" ('+tvCmW+' cm)', 'middle');
+
+  // 6. TV height from floor (right side, inner)
+  var tvCenterY = (tvTopY + tvBottomY)/2;
+  var thX = tvRight + 14;
+  parts.push('<line x1="'+thX+'" y1="'+tvCenterY+'" x2="'+thX+'" y2="'+p.floorY+'" stroke="#16a34a" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(thX-5)+'" y1="'+tvCenterY+'" x2="'+(thX+5)+'" y2="'+tvCenterY+'" stroke="#16a34a" stroke-width="'+cotaW+'"/>');
+  parts.push('<line x1="'+(thX-5)+'" y1="'+p.floorY+'" x2="'+(thX+5)+'" y2="'+p.floorY+'" stroke="#16a34a" stroke-width="'+cotaW+'"/>');
+  var thMid = (tvCenterY + p.floorY)/2;
+  parts.push('<rect x="'+(thX+4)+'" y="'+(thMid-10)+'" width="42" height="18" fill="'+BG+'" rx="3"/>');
+  parts.push('<text x="'+(thX+8)+'" y="'+(thMid+3)+'" fill="#86efac" font-size="'+(fontSize-1)+'" font-weight="700" font-family="Segoe UI, sans-serif">'+S.tvH+' cm</text>');
+
+  svg.innerHTML = parts.join('');
+}
+
+function rStats(){
+  $('s-panel').textContent = S.panelW+'×'+S.panelH;
+  $('s-tv').textContent = S.tvSize+'"';
+  $('s-th').textContent = S.tvH+' cm';
+  var ledMap={warm:'Warm',cool:'Cool',rgb:'RGB',hidden:'Hidden',none:'Sem'};
+  $('s-led').textContent = ledMap[S.light]||S.light;
+}
+
+function rTitle(){
+  var m=MODELS.filter(function(x){return x.id===S.mid;})[0]||{name:'Custom'};
+  $('previewTitle').textContent = m.name+' • '+S.panelW+'×'+S.panelH+' cm • TV '+S.tvSize+'"';
+  $('previewBadge').textContent = 'Model '+S.mid+' — '+m.name;
+}
+
+// ============================================================
+// PROMPT
+// ============================================================
+function buildPrompt(){
+  var m = MODELS.filter(function(x){return x.id===S.mid;})[0] || MODELS[8];
+  var sMap={vertical:'ripas verticais de madeira',horizontal:'ripas horizontais de madeira',geometric:'padrão geométrico em madeira',none:'parede lisa sem ripas'};
+  var lMap={warm:'iluminação LED quente âmbar integrada',cool:'iluminação LED fria branca',rgb:'iluminação RGB colorida dramática',hidden:'LED oculto criando glow suave',none:'apenas luz natural'};
+  var cMap={floating:'console flutuante suspenso',legs:'rack com pés metálicos',fullwidth:'rack full-width embutido',asym:'console assimétrico autoral'};
+  var fMap={matte:'fosco premium mate',satin:'acetinado',textured:'texturizado tátil'};
+  var decorLabels={plantas:'plantas naturais',vaso:'vasos cerâmicos',livros:'livros de design',esculturas:'esculturas decorativas',velas:'velas aromáticas'};
+  var dd = S.decor.map(function(d){return decorLabels[d]||d;}).join(', ');
+  var mbl = S.marble ? 'revestimento em mármore '+(m.mtype||'')+' com veias naturais, ' : '';
+  var tvCm = TV_CM[S.tvSize] || 144;
+
+  return 'Foto realista de painel de TV moderno em sala de estar minimalista, estilo "'+m.name+'", '+m.desc+'.\n\n'+
+    'DIMENSÕES EXATAS:\n'+
+    '- Painel: '+S.panelW+' × '+S.panelH+' cm (espessura '+S.panelThick+' cm)\n'+
+    '- Distância do piso até a base do painel: '+S.floorDist+' cm\n'+
+    '- TV: '+S.tvSize+'" ('+tvCm+' cm de largura)\n'+
+    '- Centro da TV a '+S.tvH+' cm do piso\n'+
+    '- Altura total da parede (piso ao topo do painel): '+(S.panelH+S.floorDist)+' cm\n\n'+
+    'Parede com '+sMap[S.slat]+' tom '+S.wood+', cor de fundo '+S.wall+', '+mbl+
+    lMap[S.light]+', '+cMap[S.con]+' em madeira, '+
+    (dd?'decoração com '+dd+', ':'')+'acabamento '+fMap[S.fin]+'.\n\n'+
+    'Ângulo frontal ligeiramente elevado, iluminação cinematográfica com luz natural difusa pela esquerda + '+lMap[S.light]+
+    ', piso em madeira clara, sala clean e sofisticada, composição simétrica perfeita, 8k ultra-sharp, photorealistic render, '+
+    'interior design magazine quality, shot on Sony A7R 35mm f/1.8, award-winning interior photography '+
+    '--ar 16:9 --stylize 250 --v 6.1';
+}
+
+function rPrompt(){ $('prompt-output').value = buildPrompt(); }
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function copyText(t,msg){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){ toast(msg); }, function(){ fallbackCopy(t,msg); });
+  } else { fallbackCopy(t,msg); }
+}
+function fallbackCopy(t,msg){
+  var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast(msg); }catch(e){ toast('❌ Erro ao copiar'); }
+  document.body.removeChild(ta);
+}
+
+function randomizeAll(){
+  var m = MODELS[Math.floor(Math.random()*MODELS.length)];
+  loadModel(m.id);
+  S.tvSize = [55,65,75,85][Math.floor(Math.random()*4)];
+  S.shelves = Math.floor(Math.random()*5);
+  S.panelW = 180 + Math.floor(Math.random()*8)*20;
+  S.panelH = 200 + Math.floor(Math.random()*7)*15;
+  S.floorDist = Math.floor(Math.random()*6)*10;
+  S.tvH = 90 + Math.floor(Math.random()*7)*10;
+  syncUI(); redraw();
+  toast('🎲 Randomizado!');
+}
+
+function saveJSON(){
+  var data = JSON.stringify(S, null, 2);
+  var blob = new Blob([data], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tvwalllab-'+S.mid+'.json';
+  a.click();
+  toast('💾 JSON salvo!');
+}
+
+function loadJSON(e){
+  var f = e.target.files[0]; if(!f) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try {
+      var cfg = JSON.parse(ev.target.result);
+      Object.keys(cfg).forEach(function(k){ if(k in S) S[k] = cfg[k]; });
+      syncUI(); redraw(); buildModelGrid();
+      toast('📂 Carregado!');
+    } catch(err){ toast('❌ Arquivo inválido'); }
+  };
+  reader.readAsText(f);
+}
+
+function addFav(){
+  var m = MODELS.filter(function(x){return x.id===S.mid;})[0] || {name:'Custom'};
+  S.favs.push({ id: Date.now(), mid: S.mid, name: m.name, cfg: JSON.parse(JSON.stringify(S)) });
+  renderFavs();
+  toast('❤️ Favorito!');
+}
+function renderFavs(){
+  $('fav-counter').textContent = '❤️ '+S.favs.length;
+  var list = $('favList');
+  if(S.favs.length===0){
+    list.innerHTML = '<div style="font-size:10px;color:rgba(255,255,255,.22);text-align:center;padding:10px;">Nenhum favorito ainda</div>';
+    return;
+  }
+  list.innerHTML = S.favs.map(function(f){
+    return '<div class="fav-item" data-id="'+f.id+'">'+
+      '<span>❤️</span>'+
+      '<span style="flex:1;color:rgba(255,255,255,.6);">'+f.name+'</span>'+
+      '<span class="fav-rm" data-rm="'+f.id+'">✕</span>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.fav-item').forEach(function(it){
+    it.addEventListener('click', function(e){
+      if(e.target.classList.contains('fav-rm')){
+        S.favs = S.favs.filter(function(f){return f.id!==+e.target.dataset.rm;});
+        renderFavs(); return;
+      }
+      var f = S.favs.filter(function(x){return x.id===+it.dataset.id;})[0];
+      if(!f) return;
+      Object.keys(f.cfg).forEach(function(k){ if(k in S && k!=='favs') S[k] = f.cfg[k]; });
+      syncUI(); redraw(); buildModelGrid();
+      toast('❤️ Carregado!');
+    });
+  });
+}
+
+function openInspire(){
+  var q = ['tv wall minimalist 2026','media wall wood slat led','painel tv ripado moderno'][Math.floor(Math.random()*3)];
+  window.open('https://pinterest.com/search/pins/?q='+encodeURIComponent(q),'_blank');
+}
+
+// ============================================================
+// 3D MODAL
+// ============================================================
+function open3D(){ $('modal-overlay').classList.add('open'); build3D(); }
+function close3D(){ $('modal-overlay').classList.remove('open'); }
+function build3D(){
+  var w3 = $('wall-3d');
+  var slatHTML = '';
+  if(S.slat==='vertical'){
+    for(var i=0;i<10;i++) slatHTML += '<div style="position:absolute;left:'+(i*10+0.5)+'%;top:0;bottom:0;width:9%;background:'+S.wood+';"></div>';
+  } else if(S.slat==='horizontal'){
+    for(var i=0;i<7;i++) slatHTML += '<div style="position:absolute;left:0;right:0;top:'+(i*14+0.5)+'%;height:13%;background:'+S.wood+';"></div>';
+  }
+  var marbleVeins = S.marble ? '<svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.6;" viewBox="0 0 320 200" preserveAspectRatio="none"><line x1="0" y1="60" x2="320" y2="90" stroke="rgba(200,178,138,.4)" stroke-width="3"/><line x1="60" y1="0" x2="180" y2="200" stroke="rgba(185,162,120,.28)" stroke-width="2"/></svg>' : '';
+  var bgFront = S.marble ? marbleThumb(S.mtype) : S.wall;
+  w3.innerHTML =
+    '<div style="position:absolute;inset:0;border-radius:6px;overflow:hidden;background:'+bgFront+';transform:translateZ(15px);">'+
+      slatHTML + marbleVeins +
+      '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);width:200px;height:112px;background:#080810;border:6px solid #111;border-radius:3px;box-shadow:0 12px 30px rgba(0,0,0,.8);z-index:10;"></div>'+
+      '<div style="position:absolute;bottom:10%;left:50%;transform:translateX(-50%);width:180px;height:14px;background:'+S.wood+';border-radius:3px;box-shadow:0 4px 12px rgba(0,0,0,.6);z-index:10;"></div>'+
+    '</div>'+
+    '<div style="position:absolute;top:0;right:-15px;width:15px;height:100%;background:'+darker(S.wall,25)+';transform:rotateY(90deg) translateZ(0);transform-origin:left center;"></div>'+
+    '<div style="position:absolute;bottom:-15px;left:0;right:0;height:15px;background:'+darker(S.wall,32)+';transform:rotateX(-90deg) translateZ(0);transform-origin:top center;"></div>';
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+var toastTimer = null;
+function toast(msg){
+  var t = $('toast'); t.textContent = msg; t.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  buildColorPresets();
+  buildDecorChecks();
+  buildModelGrid();
+  bindToggleGroups();
+  setupSliders();
+  setupCatFilter();
+  setupCollapsibleSections();
+  setupMobileNav();
+
+  // Mobile: by default, show preview pane only on initial load if small
+  if(window.innerWidth <= 900){
+    document.querySelectorAll('[data-pane]').forEach(function(el){
+      if(el.tagName==='BUTTON') return;
+      el.classList.toggle('pane-hidden', el.dataset.pane !== 'preview');
+    });
+  }
+
+  // Buttons
+  $('btn-inspire').addEventListener('click', openInspire);
+  $('btn-rand-top').addEventListener('click', randomizeAll);
+  $('btn-rand').addEventListener('click', randomizeAll);
+  $('btn-3d-top').addEventListener('click', open3D);
+  $('btn-3d').addEventListener('click', open3D);
+  $('btn-close-3d').addEventListener('click', close3D);
+  $('btn-toggle-dims').addEventListener('click', function(){
+    S.showDims = !S.showDims;
+    $('showDims').checked = S.showDims;
+    redraw();
+  });
+  $('modal-overlay').addEventListener('click', function(e){ if(e.target===e.currentTarget) close3D(); });
+  $('btn-copy').addEventListener('click', function(){ copyText(buildPrompt(), '📋 Prompt copiado!'); });
+  $('btn-mj').addEventListener('click', function(){ copyText(buildPrompt()+'\n\n--ar 16:9 --stylize 750 --v 6.1 --q 2', '✓ Midjourney!'); });
+  $('btn-flux').addEventListener('click', function(){ copyText(buildPrompt().replace('--ar 16:9 --stylize 250 --v 6.1','')+'\ncinematic lighting, golden hour, 8k, ultra detailed', '✓ Flux!'); });
+  $('btn-leo').addEventListener('click', function(){ copyText(buildPrompt().replace('--ar 16:9 --stylize 250 --v 6.1','')+'\nLeonardo Kino XL, PhotoReal v2, 16:9', '✓ Leonardo!'); });
+  $('btn-fav').addEventListener('click', addFav);
+  $('btn-save').addEventListener('click', saveJSON);
+  $('btn-load').addEventListener('click', function(){ $('fileIn').click(); });
+  $('fileIn').addEventListener('change', loadJSON);
+
+  loadModel(9);
+
+  var resizeTimer;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function(){
+      // Auto-show all panes on desktop
+      if(window.innerWidth > 900){
+        document.querySelectorAll('[data-pane]').forEach(function(el){
+          if(el.tagName==='BUTTON') return;
+          el.classList.remove('pane-hidden');
+        });
+      }
+      redraw();
+    }, 80);
+  });
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
